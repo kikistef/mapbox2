@@ -32,7 +32,7 @@
 		--posWinX : 0%;
 		--posWinY : 0%;
 		--blurHeight : 100px;
-		--radiusMap : 150px;
+		--radiusMap : 0px;
 		--contour : none;
 	}
 body {
@@ -50,8 +50,8 @@ body {
 	height: 100%;
 	margin: 0px;
 	/*background-color: #FF6660;
-z-index: 0;*/
-	box-shadow: inset 10px 10px 5px 5px #000;
+z-index: 0;
+	box-shadow: inset 10px 10px 5px 5px #000;*/
 }
 	.imageFondFlou {
 		position: absolute;
@@ -75,7 +75,7 @@ z-index: 0;*/
 	opacity: 1;
 	-webkit-mask-box-image: var(--contour);/*url("./images/degradeBord.png");*/ 
 	background: transparent;
-	
+	/*-webkit-mask-type: luminance;*/
 
 	/*background: radial-gradient(rgba(255,20,20, 0.3) , transparent 80%);
 	background: black;*/
@@ -94,11 +94,12 @@ z-index: 0;*/
 	/*background: radial-gradient(#ff6600 , transparent 90%);*/
 }
 #map:hover {
-	background: red;
+	background: rgba(30,30,30,1.00);
 }
 .forme {
 	position: relative;
 	border-radius: var(--radiusMap);
+	
 /*border-image: url("images/gradLeft.png");
 	border-left-width: 50px;
 	border-left-color: aqua;
@@ -1132,7 +1133,7 @@ opacity: 0;
 			fov: Math.atan(3 / 4) * 180 / Math.PI,
 			windowWidth: 100,
 			windowHeight: 50,
-			windowRadius: 100,
+			windowRadius: 0,
 			winPositionX: 0,
 			winPositionY: 0,
 			contour_progressif: true,
@@ -1153,7 +1154,8 @@ opacity: 0;
 	let horizonColor = ['#fff', '#000', '#fff', 'rgba(255, 0,197, 0.00)']; //['#fff', '#000', '#fff'];
 	let map;
 	let egoCarCircle;
-
+	
+	
 	var animLaunched = false; // variable du "play pause camera" boolean
 	var egoLaunched = false; // variable du "play pause car" boolean
 
@@ -1403,7 +1405,7 @@ console.log("draggg")
 	function mapAddEgo(){ //ajout gocar + ligne bleue et  de la source (geojson) du trajet ainsi que du chrgt de la gui
 		//ajout de la source
 		//egoPresent = true;
-		console.log("laaaaaa " + egoPresent)
+		//console.log("laaaaaa " + egoPresent)
 		map.addSource('trace', {
             type: 'geojson',
 			lineMetrics: true,
@@ -1416,28 +1418,60 @@ console.log("draggg")
                 }
             }
         });
-		
+		/////////////////////////////////////////// ombre de la ligne trajet ////////////////////////
+		map.addLayer({
+            type: 'line',
+            source: 'trace',
+            id: 'lineBlue2',
+            paint: {
+                'line-color': '#000',
+				'line-opacity': 0.98,
+                'line-width': api.tailleLine+13,
+				'line-blur': 15,
+				'line-offset': 5,
+				
+				//'line-gap-width': 5,
+            },
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round',
+            }
+        });
+		/////////////////////////////////////////// contour de la ligne trajet ////////////////////////
 		map.addLayer({
             type: 'line',
             source: 'trace',
             id: 'lineBlue1',
             paint: {
                 'line-color': lineBlueStrokeColor[selectedTheme],
-                'line-width': api.tailleLine+2,
+                'line-width': api.tailleLine+3,
+
             },
             layout: {
                 'line-cap': 'round',
                 'line-join': 'round'
             }
         });
-		//ajout de la ligne d'après la source
+		
+		/////////////////////////////////////////// la ligne trajet ////////////////////////
 		map.addLayer({
             type: 'line',
             source: 'trace',
             id: 'lineBlue',
             paint: {
-                'line-color': lineBlueColor[selectedTheme],
+               // 'line-color': lineBlueColor[selectedTheme],
                 'line-width': api.tailleLine,
+				'line-gradient': [
+                    'interpolate',
+                    ['linear'],
+                    ['line-progress'],
+                    0, "blue",
+                    0.1, "royalblue",
+                    0.3, "cyan",
+                    0.5, "lime",
+                    0.7, "yellow",/**/
+                    1, "red"
+                ]
             },
             layout: {
                 'line-cap': 'round',
@@ -1445,8 +1479,38 @@ console.log("draggg")
             }
         });
 
+		/*map.addLayer({
+			"id": "points_shadow",
+			"type": "circle",
+			"source": "trace",
+			"paint": {
+				"circle-radius": {
+            stops: [
+              [5, 1],
+              [15, 15]
+            ],
+            base: 2
+          },
+				"circle-color": "#f0f",
+				"circle-opacity": 0.4
+				
+			}
+		});
+			"filter": ["in", "$type", "Point"],
+			onAdd: function (map, mbxContext){
+						const circleCar = new THREE.CylinderGeometry(1000, 64);
+						const materialCar = new THREE.MeshLambertMaterial( {color: '#fff', transparent: true, opacity:1,  depthTest: false} );
+
+						var egoCarShadow = new THREE.Mesh(circleCar, materialCar);
+						egoCarShadow = model.setCoords(mapConfig.MAD.origin);
+						egoCarShadow.setRotation({ x: 0, y: 0, z: 0 });
+						egoCarShadow.setScale({ x: 10, y: 10, z: 10 });
+						scene.add(egoCarShadow);
+			}
+		});
+
 				console.log("xx animONOFF : " + animONOFF)
-				console.log("xx egoExist : " + egoExist)
+				console.log("xx egoExist : " + egoExist)*/
 		// ajout de l'egocar
 		map.addLayer({ // ajout de l'egocar
 				id: 'custom_layer',
@@ -1466,6 +1530,7 @@ console.log("draggg")
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.autoClear = true; */
 					
+
 					// Creative Commons License attribution: Plane model by https://sketchfab.com/ideehochzwei
 					// from  https://sketchfab.com/3d-models/plane-aa001f5a88f64b16b98356c042f2d5f3
 					/*let geometry = new THREE.CylinderGeometry( 50, 50, 0.1, 32 );
@@ -1493,6 +1558,7 @@ console.log("draggg")
 							if ( child.isMesh && child.name=="cercleExter") {
 								//console.log("cercleExter")
 								child.material = new THREE.MeshLambertMaterial( {color: '#024DD9', transparent: true, opacity:1,  depthTest: false} );
+								/*child.material = new THREE.MeshPhysicalMaterial({ color: "#00baff", emissive:"#191919", reflectivity: 1,  roughness: 0.5, metalness: 0, transmission: 0.8, ior: 2.3, opacity: 0,  thickness: 0, clearcoat: 0 });*/
 								child.castShadow = true;
 								
 							}
@@ -1504,6 +1570,8 @@ console.log("draggg")
 							}
 							
 						})
+
+						
 						egoCarCircle = model.setCoords(mapConfig.MAD.origin);
 						egoCarCircle.setRotation({ x: 0, y: 0, z: 0 });
 						egoCarCircle.setScale({ x: 1, y: 1, z: 1 });
@@ -1516,7 +1584,9 @@ console.log("draggg")
 						//document.getElementById('lineBlue').receiveShadow = true;
 						/*tb.lights.dirLight.target = egoCarCircle;
 						tb.lights.dirLight.castShadow = true;*/
+						//egoCarShadow.addEventListener('ObjectChanged', onObjectChanged, false);
 						tb.add(egoCarCircle);
+						
 						//egoCarCircle.add(sphereAxis);
 						//egoCarCircle.castShadow = true;
 						
@@ -1837,7 +1907,8 @@ const mapWinOptions = gui.addFolder('Map window')
 		function changeLineWidth() { ////pour changer la durée du parcours
 			console.log("changeLineWidth : " + api.tailleLine)//////////////////*********************** 
 			//const myLayer = map.getLayer('line').paint._values['line-width'].value;
-			map.setPaintProperty('lineBlue1', 'line-width', api.tailleLine+5);
+			map.setPaintProperty('lineBlue2', 'line-width', api.tailleLine+23);
+			map.setPaintProperty('lineBlue1', 'line-width', api.tailleLine+3);
 			map.setPaintProperty('lineBlue', 'line-width', api.tailleLine);
 			//map.getLayer('line').paint._values['line-width'].value.value = api.tailleLine;
 			console.log(map.getLayer('lineBlue'))//////////////////*********************** 
@@ -1913,7 +1984,7 @@ pathAltClone.geometry.coordinates = pathAltClone.geometry.coordinates.slice(1, p
                 'rgba(72, 130,197, 0.4)' ,
                 retour7Container.value,
                 lineBlueColor[selectedTheme]
-            ]);
+            ]);/**/
 			
 			map.dragRotate.enable();
 			map.touchPitch.enable();
