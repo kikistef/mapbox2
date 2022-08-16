@@ -19,22 +19,94 @@
 <script src="https://unpkg.com/three@0.106.2/examples/js/shaders/LuminosityHighPassShader"></script> 
 <script src="https://unpkg.com/three@0.106.2/examples/js/shaders/CopyShader"></script> 
 <script src="https://unpkg.com/three@0.106.2/examples/js/shaders/AfterimageShader"></script> 
-<script src="https://unpkg.com/three@0.106.2/examples/js/postprocessing/EffectComposer"></script> 
+<!--<script src="https://unpkg.com/three@0.106.2/examples/js/postprocessing/EffectComposer"></script> 
 <script src="https://unpkg.com/three@0.106.2/examples/js/postprocessing/ShaderPass"></script> 
 <script src="https://unpkg.com/three@0.106.2/examples/js/postprocessing/RenderPass"></script> 
-<script src="https://unpkg.com/three@0.106.2/examples/js/postprocessing/UnrealBloomPass"></script> 
+<script src="https://unpkg.com/three@0.106.2/examples/js/postprocessing/UnrealBloomPass"></script> -->
+	
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/shaders/CopyShader.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/shaders/ConvolutionShader.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/shaders/FilmShader.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/postprocessing/EffectComposer.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/postprocessing/RenderPass.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/postprocessing/ShaderPass.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/postprocessing/BloomPass.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/postprocessing/FilmPass.js"></script>
+	
+	
+	
 <script src="mapbox-gl-traffic.js"></script>
 <link href="mapbox-gl-traffic.css" rel="stylesheet" />
 <style>
-	:root {
-		--larg : 100%;
-		--haut : 50%;
-		--posWinX : 0%;
-		--posWinY : 0%;
-		--blurHeight : 100px;
-		--radiusMap : 0px;
-		--contour : none;
+:root {
+	--larg : 100%;
+	--haut : 50%;
+	--posWinX : 0%;
+	--posWinY : 0%;
+	--blurHeight : 100px;
+	--radiusMap : 0px;
+	--contour : none;
+}
+	@font-face {
+    font-family: 'DaciaSpirit-Bold_V1300'; /*a name to be used later*/
+    src: url('./fonts/DaciaSpirit-Bold_V1300.woff'); /*URL to font*/
+}
+	.boxSpeed {
+		width: 350px;
+		height: 350px;
+		/**/background: linear-gradient(0deg, #ceff00 50%, #909090 0%);
+		position: absolute;
+		z-index: 100;
+		opacity:0.95;
+		left: 180px;
+		top: 100px;
+		border-radius: 50%;
+		outline: white 2px solid;
+		outline-offset: 10px;
+		transition: 0.5s;
+		/*align-content: center;
+		vertical-align: middle;*/
+			/**/
+	box-shadow: 0px 0px 30px 20px rgba(0,0,0,1);
+}
+		.textSpeed {
+		position: relative;
+		font-family: DaciaSpirit-Bold_V1300;
+		font-color: black;
+		font-size: 190px;
+			
+		/*left:21%;  -webkit-font-smoothing : antialiased;*/
+		top:-52%;
+			
+			text-align: center;
+		/*background: red;*/
 	}
+	
+#menu {
+	position: absolute;
+	left: 0px;
+	top:950px;
+	background: #efefef;
+	padding: 10px;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 12px;
+	background-color: rgba(255,255,255,0.35);
+	backdrop-filter: blur(5px);
+}
+	
+/* ↓↓ pour enlever les logos mapbox ↓↓ */
+.mapbox-logo {
+	display: none;
+}
+.mapboxgl-ctrl-logo {
+	display: none !important;
+}
+.mapbox-improve-map {
+	display: none;
+
+	}	
+
+	
 body {
 	width: 100%;
 	height: 100%;
@@ -53,22 +125,23 @@ body {
 z-index: 0;
 	box-shadow: inset 10px 10px 5px 5px #000;*/
 }
-	.imageFondFlou {
-		position: absolute;
-		top:0;
+.imageFondFlou {
+	position: absolute;
+	top:0;
 	width: 100%;
 	height: 100%;
 	background-image: url("./speedometer/dist/pexels-photo-2748716.jpeg");
 	z-index: 0;
 	opacity: 0.00;
-		pointer-events: none;
-	}/**/
+	pointer-events: none;
+}/**/
 #map {
 	position: relative;
 	top: var(--posWinY);
-	left: calc(((100% - var(--larg)) /2) + var(--posWinX)) ;/* + var(--posWinX) ;*/
+	left: calc( ( ((100% - var(--larg)) /2) + var(--posWinX) ) );/* + var(--posWinX) ;*/
+	/*left: 0;*/
 	/*bottom: 0;*/
-	width: var(--larg);/*var(--posWinX);*/
+	width:calc(var(--larg));/*var(--posWinX);*/
 	height: var(--haut);
 	transition: 1.5s;
 	background-size: cover;
@@ -91,10 +164,13 @@ z-index: 0;
 	/*background: #111;
 	left: -700px;(100% - var(--larg));*/
 	transition: 1.5s;
+	
 	/*background: radial-gradient(#ff6600 , transparent 90%);*/
 }
 #map:hover {
-	background: rgba(30,30,30,1.00);
+	/*background: rgba(30,30,30,1.00);*/
+	filter: blur(4px);/**/
+
 }
 .forme {
 	position: relative;
@@ -381,6 +457,7 @@ opacity: 0;
 	<div id="map" class="forme">
 	
 	</div>
+	<div class="boxSpeed "><p class="textSpeed">78</p></div>
 	<div class="filtreFlou">
 		
 	</div>
@@ -453,6 +530,9 @@ opacity: 0;
 
 <script type="module">
 	import { GUI } from 'https://threejs.org/examples/jsm/libs/lil-gui.module.min.js';
+		/*	import { EffectComposer } from 'https://unpkg.com/three@0.106.2/examples/js/postprocessing/EffectComposer.js';
+				import { RenderPass } from 'https://unpkg.com/three@0.106.2/examples/js/postprocessing/RenderPass.js';
+			import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';*/
 	let flightPlan = {//coordonnées de la route (geojson)
 		"geometry": {
 			"coordinates": [
@@ -1126,9 +1206,7 @@ opacity: 0;
 			path_Position: 0,
 			tailleLine: 30,
 			carAltitude: 0.001,
-			
 			add: "",
-			
 			theme: "",
 			fov: Math.atan(3 / 4) * 180 / Math.PI,
 			windowWidth: 100,
@@ -1137,7 +1215,6 @@ opacity: 0;
 			winPositionX: 0,
 			winPositionY: 0,
 			contour_progressif: true,
-		
 			label: true,
 			//orthographic: false
 		};
@@ -1147,7 +1224,7 @@ opacity: 0;
 	const inputs = layerList.getElementsByTagName('input');
 
 	var egoExist = true;
-	let lineBlue;
+	let lineBlue0;
 	let lineBlueColor = ['rgba(72, 130,197, 1)', 'rgba(255, 130,0, 1)',  'rgba(72, 130,197, 1)', 'rgba(72, 130,197, 1)'];
 	let lineBlueStrokeColor = ['#144e93', 'rgba(0, 0, 0, 1)', 'rgba(255, 255,197, 1)', 'rgba(0, 0, 0, 1)'];
 	let skyColor = ['#73b8ed', 'hsl(237, 99%, 6%)', '#1aa7ec', 'hsl(237, 99%, 6%)'];
@@ -1172,8 +1249,10 @@ opacity: 0;
 	
 var sizeWin = document.querySelector(':root');
 	function myResizeWin_set(zob) {
+		//mapResize();
 		console.log("SSSize " + zob)//////////////////*********************** 
 		sizeWin.style.setProperty('--larg', zob)
+		
 		
 		
 	}
@@ -1238,7 +1317,8 @@ var steps = 5.00*60*60; // 5 min (x60 secondes) à 60 images par secondes
 	
 function mapResize(){
 	map.resize(window.innerWidth, window.innerHeight);
-	window.addEventListener("resize", () => {map.resize(window.innerWidth, window.innerHeight)});
+	//window.addEventListener("resize", () => {map.resize(window.innerWidth, window.innerHeight)});
+	console.log("ddddddddddddddd")
 }	
 	window.addEventListener('resize', mapResize);
 // ////////////////////////////////function INIT////////////////////////////////////////	
@@ -1418,6 +1498,28 @@ console.log("draggg")
                 }
             }
         });
+		
+		
+			/*map.addLayer({
+			"id": "points_shadow",
+
+			"source": "trace",
+			"type": "circle",
+			
+			"paint": {
+				"circle-radius": {
+            stops: [
+              [5, 1],
+              [15, 50]
+            ],
+            base: 2
+          },
+				"circle-color": "#f0f",
+				"circle-opacity": 0.4,
+				"circle-blur": 0
+				
+			}
+		});*/
 		/////////////////////////////////////////// ombre de la ligne trajet ////////////////////////
 		map.addLayer({
             type: 'line',
@@ -1429,7 +1531,6 @@ console.log("draggg")
                 'line-width': api.tailleLine+13,
 				'line-blur': 15,
 				'line-offset': 5,
-				
 				//'line-gap-width': 5,
             },
             layout: {
@@ -1457,10 +1558,11 @@ console.log("draggg")
 		map.addLayer({
             type: 'line',
             source: 'trace',
-            id: 'lineBlue',
+            id: 'lineBlue0',
             paint: {
-               // 'line-color': lineBlueColor[selectedTheme],
+               /*'line-color': lineBlueColor[selectedTheme],*/
                 'line-width': api.tailleLine,
+				//'line-trim-offset': [0.0,1.0],
 				'line-gradient': [
                     'interpolate',
                     ['linear'],
@@ -1469,7 +1571,7 @@ console.log("draggg")
                     0.1, "royalblue",
                     0.3, "cyan",
                     0.5, "lime",
-                    0.7, "yellow",/**/
+                    0.7, "yellow",
                     1, "red"
                 ]
             },
@@ -1479,24 +1581,8 @@ console.log("draggg")
             }
         });
 
-		/*map.addLayer({
-			"id": "points_shadow",
-			"type": "circle",
-			"source": "trace",
-			"paint": {
-				"circle-radius": {
-            stops: [
-              [5, 1],
-              [15, 15]
-            ],
-            base: 2
-          },
-				"circle-color": "#f0f",
-				"circle-opacity": 0.4
-				
-			}
-		});
-			"filter": ["in", "$type", "Point"],
+	
+		/*	"filter": ["in", "$type", "Point"],
 			onAdd: function (map, mbxContext){
 						const circleCar = new THREE.CylinderGeometry(1000, 64);
 						const materialCar = new THREE.MeshLambertMaterial( {color: '#fff', transparent: true, opacity:1,  depthTest: false} );
@@ -1511,40 +1597,111 @@ console.log("draggg")
 
 				console.log("xx animONOFF : " + animONOFF)
 				console.log("xx egoExist : " + egoExist)*/
-		// ajout de l'egocar
-		map.addLayer({ // ajout de l'egocar
-				id: 'custom_layer',
+		
+		
+				map.addLayer({ // ajout de l'egocar
+				id: 'custom_shadow',
 				type: 'custom',
 				renderingMode: '3d',
 				onAdd: function (map, mbxContext) {
-
-					
-					
 					 // use the Mapbox GL JS map canvas for three.js
 					this.renderer = new THREE.WebGLRenderer({
 					  canvas: map.getCanvas(),
 					  context: mbxContext,
 					  antialias: true,
 					});
-					      /* this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.autoClear = true; */
+					let geometry = new THREE.CylinderGeometry( 5000, 5000, 10000, 32 );
+					var material = new THREE.MeshBasicMaterial( {color: 0xffff00, opacity:1});
+					let cube = new THREE.Mesh(geometry, material);
+					
+					cube.anchor = mapConfig.MAD.origin;
+					/*cube.setCoords(mapConfig.MAD.origin);
+						cube.setRotation({ x: 0, y: 0, z: 0 });*/
+					
+					
+					
+					
+					tb.add(cube);
+				},
+				render: function (gl, matrix) {
+					if (animONOFF == true){
+						tb.update();
+			
+				
+					}else{
+					console.log("ZZZZZZZZZ")
+					}
+				}
+				});
+		
+		
+  const fov = 75;
+  const aspect = 2;  // the canvas default
+  const near = 0.1;
+  const far = 5;
+  const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera.position.z = 2;
+		 const scene = new THREE.Scene();
+		
+		  {
+    const color = 0xFFFFFF;
+    const intensity = 2;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    scene.add(light);
+  }
+		
+		
+		// ajout de l'egocar
+		map.addLayer({ // ajout de l'egocar
+				id: 'custom_layer',
+				type: 'custom',
+				renderingMode: '3d',
+				onAdd: function (map, mbxContext) {
+					 // use the Mapbox GL JS map canvas for three.js
+					this.renderer = new THREE.WebGLRenderer({
+					  canvas: map.getCanvas(),
+					  context: mbxContext,
+					  antialias: true,
+					});
+
+					
+					
+					
+				const composer = new THREE.EffectComposer(this.renderer);	
+				const bloomPass = new THREE.BloomPass(
+				  1,    // strength
+				  25,   // kernel size
+				  4,    // sigma ?
+				  256,  // blur render target resolution
+			  );
+									//const renderScene = new RenderPass( scene, camera );
+
+				/*const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ));
+				bloomPass.threshold = 0;
+				bloomPass.strength = 3;
+				bloomPass.radius = 0; ///params.bloomRadius*/
+
+				/*composer = new EffectComposer( renderer );
+				composer.addPass( renderScene );
+				composer.addPass( bloomPass );*/
 					
 
-					// Creative Commons License attribution: Plane model by https://sketchfab.com/ideehochzwei
-					// from  https://sketchfab.com/3d-models/plane-aa001f5a88f64b16b98356c042f2d5f3
 					/*let geometry = new THREE.CylinderGeometry( 50, 50, 0.1, 32 );
 					var material = new THREE.MeshBasicMaterial( {color: 0xff0000, opacity:0.8});
 					let cube = new THREE.Mesh(geometry, material);*/
 					var sphereAxis = new THREE.AxesHelper(1);
 					let options = {
-						obj: './models/vehicles/egoCarCircle.fbx',
-						type: 'fbx',
+						obj: './models/vehicles/egoCarCircleShadow2.gltf', //'./models/vehicles/egoCarCircle.fbx',
+						type: 'gltf',
 						scale: mapConfig.MAD.scale,
 						rotation: { x: 90, y: 0, z: 0 },
 						anchor: 'center',
 						bbox: true
 					}
+
+					
+
 
 					if (api.fixedZoom) options.fixedZoom = 19.8;
 					if (egoExist){
@@ -1553,47 +1710,56 @@ console.log("draggg")
 							//console.log("child.name " + child.name)
 							if ( child.isMesh && child.name=="Socle") {
 							 //console.log("Disc")
-							child.material = new THREE.MeshLambertMaterial( {color: '#fff', transparent: true, opacity:1,  depthTest: false} );
+							child.material = new THREE.MeshPhongMaterial( {color: '#fff', transparent: true, opacity:1,  depthTest: false} );
 							}
-							if ( child.isMesh && child.name=="cercleExter") {
+							if ( child.isMesh && child.name=="CylinderExt") {
 								//console.log("cercleExter")
-								child.material = new THREE.MeshLambertMaterial( {color: '#024DD9', transparent: true, opacity:1,  depthTest: false} );
+								child.material = new THREE.MeshPhongMaterial( {color: '#024DD9', transparent: true, opacity:1,  depthTest: false} );
 								/*child.material = new THREE.MeshPhysicalMaterial({ color: "#00baff", emissive:"#191919", reflectivity: 1,  roughness: 0.5, metalness: 0, transmission: 0.8, ior: 2.3, opacity: 0,  thickness: 0, clearcoat: 0 });*/
-								child.castShadow = true;
+							}
+							if ( child.isMesh && child.name=="CylinderEpais") {
+								//console.log("cercleExter")
+								child.material = new THREE.MeshPhongMaterial( {color: '#3274ee', transparent: true, opacity:1,  depthTest: false} );
+								/*child.material = new THREE.MeshPhysicalMaterial({ color: "#00baff", emissive:"#191919", reflectivity: 1,  roughness: 0.5, metalness: 0, transmission: 0.8, ior: 2.3, opacity: 0,  thickness: 0, clearcoat: 0 });*/
+							}
+							if ( child.isMesh && child.name=="Cylinder") {
+								//console.log("cercleExter")
+								child.material = new THREE.MeshPhongMaterial( {color: '#fff', transparent: true, opacity:1,  depthTest: false} );
+								/*child.material = new THREE.MeshPhysicalMaterial({ color: "#00baff", emissive:"#191919", reflectivity: 1,  roughness: 0.5, metalness: 0, transmission: 0.8, ior: 2.3, opacity: 0,  thickness: 0, clearcoat: 0 });*/
+								//child.castShadow = true;
+								//child.frustumCulled = true;
+								
 								
 							}
 							if ( child.isMesh && child.name=="fleche") {
 								//console.log("cercleExter")
-								child.material = new THREE.MeshLambertMaterial( {color: '#0222B0', transparent: true, opacity:1,  depthTest: false} );
-								child.castShadow = true;
+								child.material = new THREE.MeshPhongMaterial( {color: '#0222B0', transparent: true, opacity:1,  depthTest: false} );
+								//child.castShadow = true;
+								//child.frustumCulled = true;
+
 								
 							}
+							if ( child.isMesh && child.name=="Circle") {
+								const loader = new THREE.TextureLoader();
+								//console.log("cercleExter")
+								//child.material = new THREE.MeshLambertMaterial( {color: '#000', transparent: true, opacity:0.3,  depthTest: false} );/**/
+								child.material = new THREE.MeshBasicMaterial( {   opacity:1, transparent: true,} );
+								//child.castShadow = true;
+								console.log("youpiiiii")
+								
+							}/**/
 							
 						})
 
 						
 						egoCarCircle = model.setCoords(mapConfig.MAD.origin);
 						egoCarCircle.setRotation({ x: 0, y: 0, z: 0 });
-						egoCarCircle.setScale({ x: 1, y: 1, z: 1 });
-						//egoCarCircle.setScale({ x: 1, y: 1, z: 1 });
- 
+						egoCarCircle.setScale({ x: 1, y: 1, z: 1 }); 
 						egoCarCircle.addTooltip("Car Position Here", true);
 						egoCarCircle.addEventListener('ObjectChanged', onObjectChanged, false);
-						//egoCarCircle.addEventListener('SelectedChange', onSelectedChange, false);
-						egoCarCircle.castShadow = true;
-						//document.getElementById('lineBlue').receiveShadow = true;
-						/*tb.lights.dirLight.target = egoCarCircle;
-						tb.lights.dirLight.castShadow = true;*/
-						//egoCarShadow.addEventListener('ObjectChanged', onObjectChanged, false);
 						tb.add(egoCarCircle);
-						
-						//egoCarCircle.add(sphereAxis);
-						//egoCarCircle.castShadow = true;
-						
-						//tb.add(cube);
-						//if (!egoExist){
-						console.log("egoExist " + egoExist)
-						
+
+							console.log("egoExist " + egoExist)
 							console.log("fly actif " + egoExist)
 							truc = fly(flightPlan);
 							egoExist = false;
@@ -1606,7 +1772,9 @@ console.log("draggg")
 //							egoCarCircle.set(opt)
 //						}, 3000);
 
-					})}
+					})
+					//renderer.toneMappingExposure = Math.pow( 0.8, 4.0 );
+					}
 				},
 				
 				render: function (gl, matrix) {
@@ -1622,7 +1790,8 @@ console.log("draggg")
 		} 
 	})();
 };	//////////////////////////// FIN DU INIT() //////////////////////////////
-//////////////////////////////Keyboard////////////////////////////		
+	
+///////////////////////////////Keyboard////////////////////////////		
 var truc;		
 var deltaPitch = 0.5; // valeur du pitche de la carte, au clavier
 var deltaBearing = 5; // valeur de la rotation autour centre, au clavier
@@ -1784,13 +1953,7 @@ var obj1 = {  // action Play/Pause Camera
 		animLaunched = !animLaunched; 
 	}
 };
-var obj4 = { // action Play/Pause Car
-	add:function(){
-		document.getElementById('ret11-cont').value = document.getElementById('ret11-cont').innerHTML =0;	
-	}
-}
-	
-	// action Play/Pause Camera
+
 var obj2 = { // action Play/Pause Car
 	add:function(){ 
 		if (egoLaunched){
@@ -1810,29 +1973,13 @@ var obj2 = { // action Play/Pause Car
 			document.getElementById('ret9-cont').value = false;
 			api.pan = false
 		}
-		egoLaunched = !egoLaunched; /**/
-	/*	
-		if (clic == 0){
-			clic = 1;
-			calcClic1 = retour7Container.value;
-		}else if (clic == 1){
-			clic = 0;
-			calcClic2 = retour7Container.value;
-			calcClicR = calcClic2 - calcClic1;
-		}
-		
-		if (calcClicR == undefined){
-			console.log("1er point ")//////////////////*********************** 
-		}else{
-			console.log("clacClicR result : "+ calcClicR)//////////////////***********************   
-		}*/
+		egoLaunched = !egoLaunched;
 	}
 };// action Play/Pause Car
+	
 var obj3 = { // action Reset 
 	add:function(){ 
 		//egoExist = true;
-		
-		
 		console.log("triuc " + truc)//////////////////*********************** 
 		if (!egoExist){
 			//egoExist = true;
@@ -1841,47 +1988,54 @@ var obj3 = { // action Reset
 		resetPage();
 	}
 };// action Reset 
-	initGUI();
-		function initGUI() {
-
-			//gui = new GUI()
-			//gui.domElement.attr("hidden", true);
-			//gui.toggleHide();
-			gui.domElement.id = 'gui_css';
-			
-			// ajout du menu de selection de theme
-			//gui.add(optionsTheme, 'theme', optionsTheme.theme).onChange(changeTheme).setValue(optionsTheme.theme.streets_A);
-const mapOptions = gui.addFolder('Map options')
-			mapOptions.add(api, 'carSize', 18, 21).step(0.1).onChange(changeScale);
-			mapOptions.add(api, 'terrain', 0.0001, 2).step(0.01).onChange(changeTerrain);
-			mapOptions.add(api, 'time', timeMinMax[0], timeMinMax[1]).step(10).onChange(changetime);
-			mapOptions.add(api, 'path_Position', 0, 1).step(0.0001).onChange(changePosPath);
-			mapOptions.add(api, 'tailleLine', 1, 40).step(1).onChange(changeLineWidth);
-			mapOptions.add(api, 'carAltitude', 0, 3).step(0.0001).onChange(changeHeight);
-			// going above 45 degrees will also produce clipping and performance issues
-			mapOptions.add(api, 'fov', 2.5, 55.0).step(0.1).onChange(changeFOV); 
-			mapOptions.add(api, 'label').onChange(labelChange);
-			
-			gui.add(obj1, 'add').name('play/pause Camera');
-			gui.add(obj4, 'add').name('back to normal timing');
-			gui.add(obj2, 'add').name('play/pause Car');//.onChange(onSelectedChange)
-			gui.add(obj3, 'add').name('reset');
-			
-const mapWinOptions = gui.addFolder('Map window')
-			mapWinOptions.add(api, 'windowWidth', 0, 100).step(1).onChange(changeWinSize);
-			mapWinOptions.add(api, 'windowHeight', 0, 100).step(1).onChange(changeWinHeight);
-			mapWinOptions.add(api, 'windowRadius', 0, 500).step(1).onChange(changeWinRadius);
-			mapWinOptions.add(api, 'winPositionX', -68, 68).step(1).onChange(changeWinPosX);
-			mapWinOptions.add(api, 'winPositionY', 0, 50).step(1).onChange(changeWinPosY);
-			mapWinOptions.add(api, "contour_progressif").onChange(borderDiffus);/**/
 	
-			
-			
-      /*      // this will set 0.01 degrees in Mapbox which is the minimum possible and an OrthographicCamera in three.js
-			//gui.add(api, 'orthographic').name('pure orthographic').onChange(changeFOV);
-			*/
-			
-		}
+var obj4 = { // action 
+	add:function(){
+		document.getElementById('ret11-cont').value = document.getElementById('ret11-cont').innerHTML =0;	
+	}
+}	
+	
+initGUI();
+function initGUI() {
+
+	//gui = new GUI()
+	//gui.domElement.attr("hidden", true);
+	//gui.toggleHide();
+	gui.domElement.id = 'gui_css';
+
+	// ajout du menu de selection de theme
+	//gui.add(optionsTheme, 'theme', optionsTheme.theme).onChange(changeTheme).setValue(optionsTheme.theme.streets_A);
+const mapOptions = gui.addFolder('Map options')
+	mapOptions.add(api, 'carSize', 18, 21).step(0.1).onChange(changeScale);
+	mapOptions.add(api, 'terrain', 0.0001, 2).step(0.01).onChange(changeTerrain);
+	mapOptions.add(api, 'time', timeMinMax[0], timeMinMax[1]).step(10).onChange(changetime);
+	mapOptions.add(api, 'path_Position', 0, 1).step(0.0001).onChange(changePosPath);
+	mapOptions.add(api, 'tailleLine', 1, 40).step(1).onChange(changeLineWidth);
+	mapOptions.add(api, 'carAltitude', 0, 3).step(0.0001).onChange(changeCarHeight);
+	// going above 45 degrees will also produce clipping and performance issues
+	mapOptions.add(api, 'fov', 2.5, 55.0).step(0.1).onChange(changeFOV); 
+	mapOptions.add(api, 'label').onChange(labelChange);
+
+	gui.add(obj1, 'add').name('play/pause Camera');
+	gui.add(obj4, 'add').name('back to normal timing');
+	gui.add(obj2, 'add').name('play/pause Car');//.onChange(onSelectedChange)
+	gui.add(obj3, 'add').name('reset');
+
+const mapWinOptions = gui.addFolder('Map window')
+	mapWinOptions.add(api, 'windowWidth', 0, 100).step(1).onChange(changeWinSize);
+	mapWinOptions.add(api, 'windowHeight', 0, 100).step(1).onChange(changeWinHeight);
+	mapWinOptions.add(api, 'windowRadius', 0, 500).step(1).onChange(changeWinRadius);
+	mapWinOptions.add(api, 'winPositionX', -68, 68).step(1).onChange(changeWinPosX);
+	mapWinOptions.add(api, 'winPositionY', 0, 50).step(1).onChange(changeWinPosY);
+	mapWinOptions.add(api, "contour_progressif").onChange(borderDiffus);/**/
+
+
+
+/*      // this will set 0.01 degrees in Mapbox which is the minimum possible and an OrthographicCamera in three.js
+	//gui.add(api, 'orthographic').name('pure orthographic').onChange(changeFOV);
+	*/
+
+}
 	/////////////////////////////////fonctions de la GUI///////////////////////////////////
 		function changeScale() { ////pour changer la taille de l'egocar
 			egoCarCircle.fixedZoom = (api.fixedZoom ? api.carSize : null);
@@ -1909,16 +2063,16 @@ const mapWinOptions = gui.addFolder('Map window')
 			//const myLayer = map.getLayer('line').paint._values['line-width'].value;
 			map.setPaintProperty('lineBlue2', 'line-width', api.tailleLine+23);
 			map.setPaintProperty('lineBlue1', 'line-width', api.tailleLine+3);
-			map.setPaintProperty('lineBlue', 'line-width', api.tailleLine);
+			map.setPaintProperty('lineBlue0', 'line-width', api.tailleLine);
 			//map.getLayer('line').paint._values['line-width'].value.value = api.tailleLine;
-			console.log(map.getLayer('lineBlue'))//////////////////*********************** 
+			console.log(map.getLayer('lineBlue0'))//////////////////*********************** 
 		} //pour changer la durée du parcours
-		function changeHeight() {////pour changer la hauteur de l'egocar
+		function changeCarHeight() {////pour changer la hauteur de l'egocar
 		console.log("altitude slider " + api.carAltitude)//////////////////*********************** 
 		}//pour changer la hauteur de l'egocar
 	
 var newPathDistance;
-var zizi = 0;
+
 		function onObjectChanged(e) {//// boucle permettant de bouger l'egocar et retourner les valeurs "retour1-container"
 			let model = e.detail.object; //here's the object already modified
 			let action = e.detail.action;
@@ -1933,8 +2087,9 @@ var zizi = 0;
 				//map.panBy([model.coordinates[0], model.coordinates[1]], {duration: 10});
 				
 			}
-			//console.log("api.pan : "+ api.pan)
+
 			//model.position.z = api.carAltitude;
+			//mapResize();
 changeScale();
 			//////////////////////////////////////////// ici ////////////
 			
@@ -1955,10 +2110,7 @@ changeScale();
 			//newPathDistance = turf.lineDistance(pathConverted);
 			//console.log("trajetdistance2 " + newPathDistance + " -- " + pathConverted.length)
 			//console.log("pathConverted " + pathConverted.length + " -- " )//////////////////*********************** 
-	/*			console.log("longueur de liste2 : " + pathAltClone.geometry.coordinates.length);
-			console.log("trajet distance2 " + newPathDistance)
-			//zizi += 1;
-			//console.log("i " + zizi)
+	/*		
 pathAltClone.geometry.coordinates = pathAltClone.geometry.coordinates.slice(1, pathAltClone.geometry.coordinates.length);*/
 			
 			const lngLat = {
@@ -1974,20 +2126,46 @@ pathAltClone.geometry.coordinates = pathAltClone.geometry.coordinates.slice(1, p
 			);
 			//console.log("elevation : " + elevation);
 			model.position.z = api.carAltitude;
+
+			
+				
+
+		model.traverse( function ( child ) {
+
+			if ( child.isMesh && child.name=="Circle") {
+				child.position.x =  0.05;
+				child.position.y =  -api.carAltitude * 1.02 -0.04;
+				var value = 0.5-api.carAltitude;
+				child.material = new THREE.MeshBasicMaterial( { /*map: loader.load('./images/circleShadow.png'),*/ color: '#000', opacity: value, transparent: true, depthTest: false, } );
+				//child.material = new THREE.MeshBasicMaterial( {color: '#ff0', map: loader.load('./images/circleShadow.png'),  depthTest: false, opacity:1, transparent: true} );
+				
+				child.scale.x = child.scale.y = api.carAltitude*0.7 +0.3;
+				//child.set.opacity = api.carAltitude;
+				//console.log( "pouet" );
+
+			}
+
+		} );
+			
+			
+			
+			
+				
 			value8.textContent = String("altitude " + (elevation));
 			//value9.textContent = 0;
 			//mapResize();
 			
-			map.setPaintProperty('lineBlue', 'line-gradient', [
+			map.setPaintProperty('lineBlue0', 'line-gradient', [
                 'step',
                 ['line-progress'],
-                'rgba(72, 130,197, 0.4)' ,
+                'rgba(72, 130,197, 0.4)',
                 retour7Container.value,
                 lineBlueColor[selectedTheme]
             ]);/**/
 			
 			map.dragRotate.enable();
 			map.touchPitch.enable();
+			
 			//console.log(lngLat)
 		}// boucle permettant de bouger l'egocar et retourner les valeurs "retour1-container"
 	
@@ -1996,8 +2174,11 @@ pathAltClone.geometry.coordinates = pathAltClone.geometry.coordinates.slice(1, p
 			tb.fov = api.fov;
 		}
 		function changeWinSize() {
+			
 			var percen = String(api.windowWidth+"%");
 			myResizeWin_set(percen);
+			mapResize();
+			
 		}
 			function changeWinHeight() {
 			var percen = String(api.windowHeight+"%");
@@ -2017,12 +2198,12 @@ pathAltClone.geometry.coordinates = pathAltClone.geometry.coordinates.slice(1, p
 		myPositionWinX_set(posXWin);
 		console.log("posXWin : " + posXWin);
 	}
-		function changeWinPosY() {
+	function changeWinPosY() {
 		var posYWin = String(api.winPositionY+"%");
 		myPositionWinY_set(posYWin);
 		console.log("posYWin : " + posYWin);
 	}
-			function borderDiffus() {
+	function borderDiffus() {
 		//var item = String(api.contour_progressif);
 				if (api.contour_progressif){
 					var item = 'url("./images/degradeBord.png")';
@@ -2104,5 +2285,5 @@ pathAltClone.geometry.coordinates = pathAltClone.geometry.coordinates.slice(1, p
 
 		init(); // lancement de la premiere initialisation de la map
 	</script>
-	<script  src="speedometer/dist/script.js"></script>
+	<!--<script  src="speedometer/dist/script.js"></script>-->
 </body>
