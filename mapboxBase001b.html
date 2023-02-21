@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Mapbox Map</title>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.4.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.4.0/mapbox-gl.js'></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1Ijoia2lraXN0ZWYiLCJhIjoiY2t1aTJ3eHltMDV3ODJ3cGUxemUzZWl3OSJ9.8-ngOMPn_Uk_LMavuCIpbQ';
+      var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/kikistef/cl11atguh002914s4tugt8efj',
+        center: [2.272043600678484,48.8700817475247, 0],
+        zoom: 14,
+		  pitch: 75
+      });
+		
+	function rotateCamera(timestamp) {
+		// clamp the rotation between 0 -360 degrees
+		// Divide timestamp by 100 to slow rotation to ~10 degrees / sec
+		map.rotateTo((timestamp / 100) % 360, { duration: 10000 });
+		// Request the next frame of the animation.
+		requestAnimationFrame(rotateCamera);
+	}
+	map.on('load', () => {
+		// Start the animation.
+		//rotateCamera(0);
+		map.setPaintProperty('AllRoads', 'line-color', '#ff6600');
+	});
+		//const originalColor = map.getPaintProperty(layerid, 'AllRoads');
+		
+	/*map.easeTo({
+			bearing: 0.01++,
+			easing: easing
+			});
+		
+	function easing(t) { ////easing des actions claviers
+		return t * (10 - t);
+	}	*/
+		
+    </script>
+  </body>
+</html>
